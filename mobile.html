@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dien Thoai</title>
+</head>
+<style>
+
+</style>
+<body>
+
+<div style="position: absolute; top: 10px; left: 10px">
+    <table border='1' width='400' cellspacing='0' cellpadding='3' id="Nokia">
+        <tr>
+            <td><h3>NOKIA</h3>
+                <input type="button" value="Set status" onclick="mobile1.setStatus()"></input>
+                <p id="status1" style="display: inline"></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="button" value="Charge" onclick="mobile1.chargeBattery()"></input>
+                <p id="battery1" style="display: inline"></p></td>
+        </tr>
+        <tr>
+            <td><input type="text" id="message1"></input>
+                <input type="button" value="Send message" onclick="mobile1.sendMessage(mobile2)"></input></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="Read sent message" onclick="mobile1.readSentMessage()"></input>
+                <input type="button" value="Read received message" onclick="mobile1.readReceivedMessage()"></input></td>
+        </tr>
+        <tr>
+            <td><textarea id="sentMessage1"></textarea>
+                <textarea id="receivedMessage1"></textarea></td>
+
+        </tr>
+    </table>
+</div>
+
+<div style="position: absolute; top: 10px; left: 430px">
+    <table border='1' width='400' cellspacing='0' cellpadding='3' id="iPhone">
+        <tr>
+            <td><h3>iPhone</h3>
+                <input type="button" value="Set status" onclick="mobile2.setStatus()"></input>
+                <p id="status2" style="display: inline"></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="button" value="Charge" onclick="mobile2.chargeBattery()"></input>
+                <p id="battery2" style="display: inline"></p></td>
+        </tr>
+        <tr>
+            <td><input type="text" id="message2"></input>
+                <input type="button" value="Send message" onclick="mobile2.sendMessage(mobile1)"></input></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="Read sent message" onclick="mobile2.readSentMessage()"></input>
+                <input type="button" value="Read received message" onclick="mobile2.readReceivedMessage()"></input></td>
+        </tr>
+        <tr>
+            <td><textarea id="sentMessage2"></textarea>
+                <textarea id="receivedMessage2"></textarea></td>
+
+        </tr>
+    </table>
+</div>
+
+<script>
+    function Mobile(name, status, battery) {
+        this.name = name;
+        this.battery = battery;
+        this.status = status;
+        this.sentMess = [];
+        this.receivedMess = [];
+        this.getStatus = function () {
+            return this.status;
+        };
+        this.getBattery = function () {
+            return this.battery;
+        };
+        this.setStatus = function () {
+            if (this.status) {
+                this.status = false;
+            } else {
+                this.status = true;
+            }
+        };
+        this.chargeBattery = function () {
+            if (this.battery < 100) {
+                this.battery = 100;
+            }
+        };
+        this.decreaseBattery = function () {
+            if (this.battery > 0) {
+                this.battery--;
+            }
+        };
+        this.isEmpty = function () {
+            if (this.battery > 0) {
+                return false;
+            } else {
+                return true;
+            }
+        };
+
+        this.sendMessage = function (mobile) {
+            let message;
+            if (this.name === mobile1.name) {
+                message = document.getElementById("message1").value;
+            } else {
+                message = document.getElementById("message2").value;
+            }
+            if (this.isEmpty()) {
+                alert("The phone is out of battery!");
+            } else if (this.status) {
+                this.sentMess.push(message);
+                alert(this.sentMess);
+                mobile.receivedMess.push(message);
+                this.decreaseBattery();
+                alert("The message has been sent!");
+            } else {
+                alert("The phone is not turn on!");
+            }
+        };
+        this.readReceivedMessage = function () {
+            if (this.isEmpty()) {
+                alert("The phone is out of battery!");
+            } else if (this.status) {
+                let sout = "";
+                for (let i = 0; i < this.receivedMess.length; i++) {
+                    sout = sout + this.receivedMess[i] + "\n";
+                    this.decreaseBattery();
+                }
+                if (this.name === mobile1.name) {
+                    document.getElementById("receivedMessage1").value = sout;
+                } else {
+                    document.getElementById("receivedMessage2").value = sout;
+                }
+            } else {
+                alert("The phone is not turn on!");
+            }
+        };
+        this.readSentMessage = function () {
+            if (this.isEmpty()) {
+                alert("The phone is out of battery!");
+            } else if (this.status) {
+                let sout = "";
+                for (let i = 0; i < this.sentMess.length; i++) {
+                    sout = sout + this.sentMess[i] + "\n";
+                    this.decreaseBattery();
+                }
+                if (this.name === mobile1.name) {
+                    document.getElementById("sentMessage1").value = sout;
+                } else {
+                    document.getElementById("sentMessage2").value = sout;
+                }
+            } else {
+                alert("The phone is not turn on!");
+            }
+        };
+    }
+
+    let mobile1 = new Mobile("Nokia", false, 90);
+    let mobile2 = new Mobile("iPhone", false, 100);
+
+    function a() {
+        document.getElementById("status1").innerHTML = mobile1.getStatus();
+        document.getElementById("status2").innerHTML = mobile2.getStatus();
+        document.getElementById("battery1").innerHTML = mobile1.getBattery();
+        document.getElementById("battery2").innerHTML = mobile2.getBattery();
+        setTimeout(a, 1000);
+    }
+    a();
+
+</script>
+
+</body>
+</html>
